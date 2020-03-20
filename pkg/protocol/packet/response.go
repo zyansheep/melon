@@ -3,7 +3,7 @@ package packet
 import (
 	"io"
 
-	"github.com/melondevs/melon/pkg/util"
+	"../../util"
 )
 
 // ResponsePacket ...

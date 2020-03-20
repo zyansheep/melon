@@ -7,7 +7,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/melondevs/melon/pkg/util"
+	"../../util"
 )
 
 // Packet represents a packet to be sent or recieved by Melon or the client.

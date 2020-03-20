@@ -5,9 +5,9 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/melondevs/melon/pkg/config"
-	"github.com/melondevs/melon/pkg/protocol/packet"
-	"github.com/melondevs/melon/pkg/util"
+	"../../pkg/config"
+	"../../pkg/protocol/packet"
+	"../../pkg/util"
 )
 
 func main() {

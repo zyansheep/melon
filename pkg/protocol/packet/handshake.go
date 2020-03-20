@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/melondevs/melon/pkg/util"
+	"../../util"
 )
 
 // HandshakePacket ...
