@@ -1,0 +1,78 @@
+package packet
+
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"io"
+	"net"
+
+	"github.com/melondevs/melon/pkg/util"
+)
+
+// Packet represents a packet to be sent or recieved by Melon or the client.
+type Packet interface {
+	ID() int32
+	Read(reader io.Reader) error
+	Write(writer io.Writer) error
+}
+
+// ReadPacket reads a single packet from the provided connection.
+func ReadPacket(conn net.Conn) (Packet, error) {
+	reader := bufio.NewReader(conn)
+
+	_, err := util.ReadVarint(reader)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := util.ReadVarint(reader)
+	if err != nil {
+		return nil, err
+	}
+
+	pk := Packet(nil)
+
+	switch id {
+	case HandshakePacketID:
+		pk = new(HandshakePacket)
+		err = pk.Read(reader)
+	default:
+		fmt.Printf("Recieved unknown packet ID: %v.\n", id)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pk, nil
+}
+
+// WritePacket writes a single packet to the provided connection.
+func WritePacket(conn net.Conn, pk Packet) error {
+	writer := bufio.NewWriter(conn)
+
+	tempBuffer := bytes.Buffer{}
+	tempWriter := bufio.NewWriter(&tempBuffer)
+
+	err := util.WriteVarint(pk.ID(), tempWriter)
+	if err != nil {
+		return err
+	}
+
+	err = pk.Write(tempWriter)
+	if err != nil {
+		return err
+	}
+
+	err = tempWriter.Flush()
+	if err != nil {
+		return err
+	}
+
+	util.WriteVarint(int32(tempBuffer.Len()), writer)
+	writer.Write(tempBuffer.Bytes())
+	writer.Flush()
+
+	return nil
+}
