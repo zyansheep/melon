@@ -53,6 +53,11 @@ func main() {
 							response.Response = "{\"version\":{\"name\":\"1.15.2\",\"protocol\":578},\"players\":{\"max\":100,\"online\":0,\"sample\":[]},\"description\":{\"text\":\"Hello Melon!\"}}"
 							packet.WritePacket(conn, &response)
 						}
+					} else if pk.ID() == packet.PingPacketID {
+						pong := packet.PongPacket{}
+						pong.Payload = pk.(*packet.PingPacket).Payload
+						packet.WritePacket(conn, &pong)
+						return
 					}
 				}
 			}
