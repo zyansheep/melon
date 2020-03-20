@@ -1,48 +1,54 @@
 package util
 
 import (
-    "encoding/json"
-    "fmt"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
-// Melon configuration struct.
+// Config is the Melon configuration struct.
 type Config struct {
-    Address string `json:"address"`
+	MelonAddress string `json:"melonAddress"`
+	Name         string `json:"name"`
+	HostAddress  string `json:"hostAddress"`
+	HostPort     int    `json:"hostPort"`
 }
 
-// Create a new Config with default values.
+// NewConfig creates a new Config with default values.
 func NewConfig() Config {
-    config := Config{}
-    config.Address = "0.0.0.0:25565"
-    return config
+	config := Config{}
+	config.MelonAddress = "0.0.0.0:19132"
+	config.Name = ColorDarkGreen + FormatBold + "Melon Proxy Server"
+	config.HostAddress = "example.com"
+	config.HostPort = 25565
+	return config
 }
 
-// Load the Config from the config.json file, or create one if config.json doesn't exist.
+// LoadConfig loads the Config from the config.json file, or create one if config.json doesn't exist.
 func LoadConfig() Config {
-    config := Config{}
+	config := Config{}
 
-    file, error := ioutil.ReadFile("config.json")
-    if error != nil {
-        config = NewConfig()
+	file, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		fmt.Println("Creating a default config.json file.")
 
-        file, error = json.MarshalIndent(config, "", "    ")
-        if error != nil {
-            panic(error)
-        }
+		config = NewConfig()
 
-        error = ioutil.WriteFile("config.json", file, 0644)
-        if error != nil {
-            panic(error)
-        }
+		file, err = json.MarshalIndent(config, "", "    ")
+		if err != nil {
+			panic(err)
+		}
 
-        fmt.Println("Created a blank 'config.json' file.")
-    } else {
-        error = json.Unmarshal([]byte(file), &config)
-        if error != nil {
-            panic(error)
-        }
-    }
+		err = ioutil.WriteFile("config.json", file, 0644)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		err = json.Unmarshal([]byte(file), &config)
+		if err != nil {
+			panic(err)
+		}
+	}
 
-    return config
+	return config
 }

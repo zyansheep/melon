@@ -1,11 +1,14 @@
 package main
 
 import (
-    "fmt"
-    "github.com/melondevs/melon/internal/util"
+	"github.com/melondevs/melon/internal/proxy"
+	"github.com/melondevs/melon/internal/util"
 )
 
 func main() {
-    config := util.LoadConfig()
-    fmt.Println(config.Address)
+	// Load configuration.
+	config := util.LoadConfig()
+
+	// Open and run the proxy server.
+	proxy.RunProxy(config)
 }
