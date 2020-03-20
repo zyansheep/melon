@@ -37,6 +37,9 @@ func ReadPacket(conn net.Conn) (Packet, error) {
 	case HandshakePacketID:
 		pk = new(HandshakePacket)
 		err = pk.Read(reader)
+	case PingPacketID:
+		pk = new(PingPacket)
+		err = pk.Read(reader)
 	default:
 		fmt.Printf("Recieved unknown packet ID: %v.\n", id)
 	}
@@ -70,9 +73,20 @@ func WritePacket(conn net.Conn, pk Packet) error {
 		return err
 	}
 
-	util.WriteVarint(int32(tempBuffer.Len()), writer)
-	writer.Write(tempBuffer.Bytes())
-	writer.Flush()
+	err = util.WriteVarint(int32(tempBuffer.Len()), writer)
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(tempBuffer.Bytes())
+	if err != nil {
+		return err
+	}
+
+	err = writer.Flush()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
