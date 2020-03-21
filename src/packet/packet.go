@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"reflect"
 
 	"../../util"
 )
 
 // Packet represents a packet to be sent or recieved by Melon or the client.
-type Packet interface {
-	ID() int32
-	Read(reader io.Reader) error
-	Write(writer io.Writer) error
+type Packet struct{
+	ID int32
+	data []byte
 }
 
 // ReadPacket reads a single packet from the provided connection.
@@ -30,25 +30,10 @@ func ReadPacket(conn net.Conn) (Packet, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	pk := Packet(nil)
-
-	switch id {
-	case HandshakePacketID:
-		pk = new(HandshakePacket)
-		err = pk.Read(reader)
-	case PingPacketID:
-		pk = new(PingPacket)
-		err = pk.Read(reader)
-	default:
-		fmt.Printf("Recieved unknown packet ID: %v.\n", id)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pk, nil
+	var data []byte;
+	reader.Read(data);
+	
+	return Packet{id, data}
 }
 
 // WritePacket writes a single packet to the provided connection.

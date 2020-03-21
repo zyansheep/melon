@@ -5,9 +5,10 @@ import (
 	"net"
 	"strconv"
 
-	"config"
-	"protocol/packet"
-	"util"
+	"../config"
+	"../protocol/packet"
+	"../util"
+	
 )
 
 func main() {
@@ -49,14 +50,12 @@ func main() {
 
 				if pk != nil {
 					switch pk.ID() {
-					case packet.HandshakePacketID:
-						if pk.(*packet.HandshakePacket).NextState == 1 {
-							response := packet.ResponsePacket{}
-							response.Response = "{\"version\":{\"name\":\"1.15.2\",\"protocol\":578},\"players\":{\"max\":100,\"online\":0,\"sample\":[]},\"description\":{\"text\":\"Hello Melon!\"}}"
-							packet.WritePacket(conn, &response)
-						}
-					case packet.PingID:
-						if pk.(*packet.HandshakePacket)
+					case protocol.HandshakePacketID:
+						//response.Response = "{\"version\":{\"name\":\"1.15.2\",\"protocol\":578},\"players\":{\"max\":100,\"online\":0,\"sample\":[]},\"description\":{\"text\":\"Hello Melon!\"}}"
+						packet.WritePacket(conn, protocol.HandshakePacket());
+						
+					case protocol.PingID:
+						packet.WritePacket(conn, protocol.HandshakePacket());
 					}
 				}
 			}
