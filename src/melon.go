@@ -5,9 +5,9 @@ import (
 	"net"
 	"strconv"
 
-	"../../pkg/config"
-	"../../pkg/protocol/packet"
-	"../../pkg/util"
+	"config"
+	"protocol/packet"
+	"util"
 )
 
 func main() {
@@ -36,6 +36,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		
 
 		defer conn.Close()
 
@@ -47,17 +48,15 @@ func main() {
 				}
 
 				if pk != nil {
-					if pk.ID() == packet.HandshakePacketID {
+					switch pk.ID() {
+					case packet.HandshakePacketID:
 						if pk.(*packet.HandshakePacket).NextState == 1 {
 							response := packet.ResponsePacket{}
 							response.Response = "{\"version\":{\"name\":\"1.15.2\",\"protocol\":578},\"players\":{\"max\":100,\"online\":0,\"sample\":[]},\"description\":{\"text\":\"Hello Melon!\"}}"
 							packet.WritePacket(conn, &response)
 						}
-					} else if pk.ID() == packet.PingPacketID {
-						pong := packet.PongPacket{}
-						pong.Payload = pk.(*packet.PingPacket).Payload
-						packet.WritePacket(conn, &pong)
-						return
+					case packet.PingID:
+						if pk.(*packet.HandshakePacket)
 					}
 				}
 			}
